@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>导入obj模型</title>
+  <script src="./js/newThree.js"></script>
+  <script src="./js/TrackballControls1.js"></script>
+  <script src="./js/OBJLoader.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+</body>
+<script type="text/javascript">
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,1000);
+  var renderer = new THREE.WebGLRenderer();
+  renderer.setClearColor(new THREE.Color(0xaaaaff));
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  //导入建模文件
+  var loader = new THREE.OBJLoader();
+  loader.load("./data/pinecone.obj",(loadMesh)=>{
+    console.log(loadMesh);
+    var material = new THREE.MeshLambertMaterial({color:0x5c3a21});
+    loadMesh.children.forEach(child=>{
+      child.material = material;
+      //顶点和面的绘画
+      child.geometry.computeFaceNormals();
+      child.geometry.computeVertexNormals();
+    })
+    loadMesh.scale.set(100,100,100);
+    loadMesh.rotation.x = -0.3;
+    scene.add(loadMesh);
+  })
+
+  //添加光源
+  var spotLight = new THREE.SpotLight(0xffffff);
+  spotLight.position.set(0,40,30);
+  scene.add(spotLight);
+
+  camera.position.set(-30,40,30);
+  camera.lookAt(scene.position);
+  document.getElementById('app').appendChild(renderer.domElement);
+
+  //添加鼠标拖动
+  var trackballControls = new THREE.TrackballControls(camera,renderer.domElement);
+  var clock = new THREE.Clock();
+
+  renderer.render(scene,camera);
+
+  function animate(){
+    trackballControls.update(clock.getDelta());
+    renderer.render(scene,camera);
+    requestAnimationFrame(animate);
+  }
+  animate();
+</script>
+</html>

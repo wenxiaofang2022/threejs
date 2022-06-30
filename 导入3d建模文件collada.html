@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>collada</title>
+  <script src="./js/newThree.js"></script>
+  <script src="./js/TrackballControls1.js"></script>
+  <script src="./js/ColladaLoader.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+</body>
+<script type="text/javascript">
+  //场景
+  //相机
+  //渲染器
+  //导入collada文件
+  //添加光源
+  //鼠标拖动
+
+  //场景
+  var scene = new THREE.Scene();
+  //相机
+  var camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,1000);
+  //渲染器
+  var renderer = new THREE.WebGLRenderer();
+  //设置渲染器
+  renderer.setClearColor(new THREE.Color(0xAAAAA));
+  renderer.setSize(window.innerWidth,window.innerHeight);
+
+  var loader =  new THREE.ColladaLoader();
+  var mesh;
+  loader.load("./data/walker_step.dae",(result)=>{
+    console.log(result);
+    mesh = result.scene.children[0].children[0].clone();
+    mesh.scale.set(4,4,4);
+    scene.add(mesh);
+  })
+  //添加光源
+  var spotLight = new THREE.SpotLight(0xffffff);
+  spotLight.position.set(150,140,130);
+  scene.add(spotLight);
+
+  //设置相机
+  camera.position.set(150,150,150);
+  camera.lookAt(scene.position);
+
+  document.getElementById('app').appendChild(renderer.domElement);
+
+  //添加鼠标拖动
+  var trackballControls = new THREE.TrackballControls(camera,renderer.domElement);
+  var clock = new THREE.Clock();
+
+  renderer.render(scene,camera);
+
+  function animate(){
+    //拖动计算
+    trackballControls.update(clock.getDelta());
+    renderer.render(scene,camera);
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+</script>
+</html>
